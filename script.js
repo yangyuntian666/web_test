@@ -11,6 +11,17 @@ let keys = {};
 let score = 0;
 let level = 1;
 
+// 触屏控制变量
+let touchStartX = 0;
+let touchStartY = 0;
+let touchControls = {
+    up: false,
+    down: false,
+    left: false,
+    right: false,
+    shoot: false
+};
+
 // 坦克类
 class Tank {
     constructor(x, y, color, isPlayer = false) {
@@ -76,28 +87,30 @@ class Tank {
     handleInput() {
         let moved = false;
         
-        if (keys['w'] || keys['W']) {
+        // 键盘控制
+        if (keys['w'] || keys['W'] || touchControls.up) {
             this.y -= this.speed;
             this.direction = 0;
             moved = true;
         }
-        if (keys['s'] || keys['S']) {
+        if (keys['s'] || keys['S'] || touchControls.down) {
             this.y += this.speed;
             this.direction = 2;
             moved = true;
         }
-        if (keys['a'] || keys['A']) {
+        if (keys['a'] || keys['A'] || touchControls.left) {
             this.x -= this.speed;
             this.direction = 3;
             moved = true;
         }
-        if (keys['d'] || keys['D']) {
+        if (keys['d'] || keys['D'] || touchControls.right) {
             this.x += this.speed;
             this.direction = 1;
             moved = true;
         }
         
-        if ((keys[' '] || keys['Spacebar']) && this.shootCooldown === 0) {
+        // 射击控制（键盘或触屏）
+        if ((keys[' '] || keys['Spacebar'] || touchControls.shoot) && this.shootCooldown === 0) {
             this.shoot();
         }
     }
@@ -198,9 +211,199 @@ function initGame() {
     // 创建敌方坦克
     spawnEnemies();
     
+    // 设置触屏控制
+    setupTouchControls();
+    
     // 开始游戏循环
     gameRunning = true;
     gameLoop();
+}
+
+// 设置触屏控制
+function setupTouchControls() {
+    const canvasContainer = document.getElementById('tankGameContainer');
+    
+    // 创建虚拟摇杆和射击按钮
+    createTouchControls();
+    
+    // 添加触屏事件监听
+    canvasContainer.addEventListener('touchstart', handleTouchStart, false);
+    canvasContainer.addEventListener('touchmove', handleTouchMove, false);
+    canvasContainer.addEventListener('touchend', handleTouchEnd, false);
+}
+
+// 创建触屏控制UI
+function createTouchControls() {
+    const container = document.getElementById('tankGameContainer');
+    
+    // 创建虚拟摇杆区域
+    const joystickArea = document.createElement('div');
+    joystickArea.id = 'joystickArea';
+    joystickArea.innerHTML = `
+        <div id="joystickBase"></div>
+        <div id="joystickHandle"></div>
+    `;
+    
+    // 创建射击按钮
+    const shootButton = document.createElement('button');
+    shootButton.id = 'shootButton';
+    shootButton.textContent = '射击';
+    shootButton.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        touchControls.shoot = true;
+    });
+    shootButton.addEventListener('touchend', (e) => {
+        e.preventDefault();
+        touchControls.shoot = false;
+    });
+    
+    container.appendChild(joystickArea);
+    container.appendChild(shootButton);
+    
+    // 添加触屏控制样式
+    addTouchControlStyles();
+}
+
+// 添加触屏控制样式
+function addTouchControlStyles() {
+    const style = document.createElement('style');
+    style.textContent = `
+        #joystickArea {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            touch-action: none;
+        }
+        
+        #joystickBase {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.5);
+        }
+        
+        #joystickHandle {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(52, 152, 219, 0.8);
+            transition: transform 0.1s;
+        }
+        
+        #shootButton {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: rgba(231, 76, 60, 0.8);
+            color: white;
+            border: none;
+            font-size: 16px;
+            font-weight: bold;
+            touch-action: manipulation;
+        }
+        
+        @media (min-width: 768px) {
+            #joystickArea, #shootButton {
+                display: none;
+            }
+        }
+    `;
+    document.head.appendChild(style);
+}
+
+// 触屏事件处理函数
+function handleTouchStart(e) {
+    e.preventDefault();
+    const touch = e.touches[0];
+    const rect = e.currentTarget.getBoundingClientRect();
+    touchStartX = touch.clientX - rect.left;
+    touchStartY = touch.clientY - rect.top;
+    
+    updateTouchControls(touchStartX, touchStartY);
+}
+
+function handleTouchMove(e) {
+    e.preventDefault();
+    const touch = e.touches[0];
+    const rect = e.currentTarget.getBoundingClientRect();
+    const currentX = touch.clientX - rect.left;
+    const currentY = touch.clientY - rect.top;
+    
+    updateTouchControls(currentX, currentY);
+}
+
+function handleTouchEnd(e) {
+    e.preventDefault();
+    resetTouchControls();
+}
+
+// 更新触屏控制状态
+function updateTouchControls(x, y) {
+    const centerX = 60; // joystickArea中心点
+    const centerY = 60;
+    const threshold = 20; // 最小移动阈值
+    
+    const deltaX = x - centerX;
+    const deltaY = y - centerY;
+    const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+    
+    // 重置所有方向
+    touchControls.up = false;
+    touchControls.down = false;
+    touchControls.left = false;
+    touchControls.right = false;
+    
+    // 如果移动距离超过阈值，则激活相应方向
+    if (distance > threshold) {
+        const angle = Math.atan2(deltaY, deltaX) * 180 / Math.PI;
+        
+        if (angle >= -45 && angle < 45) {
+            touchControls.right = true;
+        } else if (angle >= 45 && angle < 135) {
+            touchControls.down = true;
+        } else if (angle >= 135 || angle < -135) {
+            touchControls.left = true;
+        } else {
+            touchControls.up = true;
+        }
+        
+        // 更新摇杆手柄位置
+        const handle = document.getElementById('joystickHandle');
+        const maxDistance = 30;
+        const moveX = Math.cos(angle * Math.PI / 180) * Math.min(distance, maxDistance);
+        const moveY = Math.sin(angle * Math.PI / 180) * Math.min(distance, maxDistance);
+        handle.style.transform = `translate(calc(-50% + ${moveX}px), calc(-50% + ${moveY}px))`;
+    }
+}
+
+// 重置触屏控制
+function resetTouchControls() {
+    touchControls.up = false;
+    touchControls.down = false;
+    touchControls.left = false;
+    touchControls.right = false;
+    touchControls.shoot = false;
+    
+    // 重置摇杆手柄位置
+    const handle = document.getElementById('joystickHandle');
+    if (handle) {
+        handle.style.transform = 'translate(-50%, -50%)';
+    }
 }
 
 // 生成敌人
@@ -354,6 +557,7 @@ function startTankGame() {
 closeBtn.onclick = function() {
     modal.style.display = 'none';
     gameRunning = false;
+    resetTouchControls(); // 清理触屏控制
 }
 
 // 重新开始游戏
@@ -366,6 +570,7 @@ function resetGame() {
     score = 0;
     level = 1;
     bullets = [];
+    resetTouchControls();
     initGame();
 }
 
@@ -374,6 +579,7 @@ window.onclick = function(event) {
     if (event.target == modal) {
         modal.style.display = 'none';
         gameRunning = false;
+        resetTouchControls();
     }
 }
 

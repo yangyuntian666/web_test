@@ -11,6 +11,7 @@ body {
     color: #333;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     min-height: 100vh;
+    touch-action: manipulation; /* 改善触屏体验 */
 }
 
 .container {
@@ -265,6 +266,7 @@ footer {
     width: 100%;
     height: 100%;
     background-color: rgba(0, 0, 0, 0.8);
+    touch-action: none; /* 防止模态框内的触摸冲突 */
 }
 
 .modal-content {
@@ -296,6 +298,8 @@ footer {
 
 #tankGameContainer {
     text-align: center;
+    position: relative;
+    touch-action: none;
 }
 
 #gameCanvas {
@@ -303,6 +307,7 @@ footer {
     background: #2c3e50;
     border-radius: 5px;
     margin-bottom: 1rem;
+    touch-action: none;
 }
 
 .game-controls {
@@ -310,8 +315,13 @@ footer {
 }
 
 .game-controls p {
-    margin-bottom: 1rem;
+    margin-bottom: 0.5rem;
     color: #666;
+    font-size: 0.9rem;
+}
+
+.game-controls p strong {
+    color: #333;
 }
 
 #restartBtn {
@@ -323,6 +333,7 @@ footer {
     cursor: pointer;
     font-weight: bold;
     transition: all 0.3s ease;
+    margin-top: 1rem;
 }
 
 #restartBtn:hover {
@@ -362,6 +373,13 @@ footer {
     .modal-content {
         margin: 10% auto;
         width: 95%;
+        padding: 15px;
+    }
+    
+    #gameCanvas {
+        width: 100%;
+        max-width: 100%;
+        height: auto;
     }
 }
 
@@ -380,5 +398,9 @@ footer {
     
     .game-card {
         padding: 1.5rem;
+    }
+    
+    .game-controls p {
+        font-size: 0.8rem;
     }
 }
