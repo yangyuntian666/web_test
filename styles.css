@@ -322,12 +322,17 @@ footer {
 .game-controls {
     margin-top: 1rem;
     padding: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
 }
 
 .game-controls p {
-    margin-bottom: 0.5rem;
+    margin: 0;
     color: #666;
     font-size: 0.9rem;
+    text-align: center;
 }
 
 .game-controls p strong {
@@ -343,7 +348,8 @@ footer {
     cursor: pointer;
     font-weight: bold;
     transition: all 0.3s ease;
-    margin-top: 1rem;
+    margin-top: 0.5rem;
+    align-self: center;
 }
 
 #restartBtn:hover {
@@ -398,21 +404,21 @@ footer {
     }
     
     .modal-content {
-        margin: 5% auto; /* 恢复原始的边距设置 */
-        width: 90%; /* 恢复原始宽度 */
-        height: 80vh; /* 恢复原始高度 */
-        border-radius: 10px; /* 恢复原始圆角 */
-        padding: 20px; /* 恢复原始内边距 */
+        margin: 1% auto;
+        width: 100%;
+        height: 100vh;
+        border-radius: 0;
+        padding: 10px;
     }
     
     #gameCanvas {
-        height: 60vh; /* 恢复更原始的游戏区域高度 */
+        height: 65vh; /* 为控制按钮留出空间 */
     }
     
     /* 移动端安全区域适配 */
     .modal-content {
-        padding-top: calc(20px + var(--safe-area-inset-top, 0));
-        padding-bottom: calc(20px + var(--safe-area-inset-bottom, 0));
+        padding-top: calc(10px + var(--safe-area-inset-top, 0));
+        padding-bottom: calc(10px + var(--safe-area-inset-bottom, 0));
     }
 }
 
@@ -438,13 +444,11 @@ footer {
     }
     
     .modal-content {
-        padding: 15px; /* 调整小屏幕内边距 */
-        margin: 3% auto; /* 调整小屏幕边距 */
-        width: 95%; /* 调整小屏幕宽度 */
+        padding: 5px;
     }
     
     #gameCanvas {
-        height: 55vh; /* 小屏幕适度调整游戏区域 */
+        height: 60vh; /* 小屏幕进一步压缩游戏区域 */
     }
 }
 

@@ -1,7 +1,7 @@
 // 获取DOM元素
 const modal = document.getElementById('gameModal');
 const closeBtn = document.querySelector('.close');
-const restartBtn = document.getElementById('restartBtn');
+let restartBtn = document.getElementById('restartBtn'); // 初始化重新开始按钮
 
 // 游戏变量
 let canvas, ctx;
@@ -19,6 +19,9 @@ let touchControls = {
     right: false,
     shoot: false
 };
+
+// 全屏相关变量
+let isFullscreen = false;
 
 // 坦克类
 class Tank {
@@ -212,6 +215,10 @@ function initGame() {
     // 设置触屏控制
     setupTouchControls();
     
+    // 检查是否为移动端，如果是则自动进入全屏
+    if (isMobileDevice()) {
+        enterFullscreen();
+    }
     
     // 开始游戏循环
     gameRunning = true;
@@ -224,6 +231,49 @@ function isMobileDevice() {
            window.innerWidth <= 768;
 }
 
+// 进入全屏模式
+function enterFullscreen() {
+    const elem = document.documentElement;
+    
+    if (elem.requestFullscreen) {
+        elem.requestFullscreen().catch(err => {
+            console.log('全屏请求失败:', err);
+        });
+    } else if (elem.mozRequestFullScreen) { // Firefox
+        elem.mozRequestFullScreen();
+    } else if (elem.webkitRequestFullscreen) { // Chrome, Safari and Opera
+        elem.webkitRequestFullscreen();
+    } else if (elem.msRequestFullscreen) { // IE/Edge
+        elem.msRequestFullscreen();
+    }
+    
+    isFullscreen = true;
+    updateFullscreenButton();
+}
+
+// 退出全屏模式
+function exitFullscreen() {
+    if (document.exitFullscreen) {
+        document.exitFullscreen();
+    } else if (document.mozCancelFullScreen) {
+        document.mozCancelFullScreen();
+    } else if (document.webkitExitFullscreen) {
+        document.webkitExitFullscreen();
+    } else if (document.msExitFullscreen) {
+        document.msExitFullscreen();
+    }
+    
+    isFullscreen = false;
+    updateFullscreenButton();
+}
+
+// 更新全屏按钮状态
+function updateFullscreenButton() {
+    const fullscreenBtn = document.getElementById('fullscreenBtn');
+    if (fullscreenBtn) {
+        fullscreenBtn.textContent = isFullscreen ? '退出全屏' : '全屏游戏';
+    }
+}
 
 // 设置触屏控制
 function setupTouchControls() {
@@ -268,8 +318,16 @@ function createVirtualButtons() {
     shootButton.className = 'action-btn';
     shootButton.textContent = '射击';
     
+    // 创建全屏按钮（仅移动端显示）
+    const fullscreenButton = document.createElement('button');
+    fullscreenButton.id = 'fullscreenBtn';
+    fullscreenButton.className = 'fullscreen-btn';
+    fullscreenButton.textContent = isFullscreen ? '退出全屏' : '全屏游戏';
+    fullscreenButton.addEventListener('click', toggleFullscreen);
+    
     container.appendChild(directionArea);
     container.appendChild(shootButton);
+    container.appendChild(fullscreenButton);
     
     // 添加事件监听
     setupButtonEvents();
@@ -278,6 +336,14 @@ function createVirtualButtons() {
     addVirtualButtonStyles();
 }
 
+// 切换全屏模式
+function toggleFullscreen() {
+    if (isFullscreen) {
+        exitFullscreen();
+    } else {
+        enterFullscreen();
+    }
+}
 
 // 添加虚拟按键样式
 function addVirtualButtonStyles() {
@@ -292,87 +358,132 @@ function addVirtualButtonStyles() {
     style.textContent = `
         .control-area {
             position: absolute;
-            bottom: 30px; /* 移到左下角 */
-            left: 30px; /* 移到左下角 */
+            bottom: 120px;
+            left: 50%;
+            transform: translateX(-50%);
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
             z-index: 1000;
         }
         
         .horizontal-controls {
             display: flex;
-            gap: 8px;
+            gap: 10px;
         }
         
         .control-btn {
-            width: 55px;
-            height: 55px;
-            border-radius: 12px;
+            width: 60px;
+            height: 60px;
+            border-radius: 15px;
             border: none;
-            background: rgba(52, 152, 219, 0.85);
+            background: rgba(52, 152, 219, 0.8);
             color: white;
-            font-size: 22px;
+            font-size: 24px;
             font-weight: bold;
             touch-action: manipulation;
-            box-shadow: 0 3px 12px rgba(52, 152, 219, 0.4);
-            backdrop-filter: blur(8px);
+            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.4);
+            backdrop-filter: blur(5px);
             transition: all 0.1s ease;
         }
         
         .control-btn:active {
-            background: rgba(41, 128, 185, 0.95);
-            transform: scale(0.92);
-            box-shadow: 0 1px 8px rgba(52, 152, 219, 0.6);
+            background: rgba(41, 128, 185, 0.9);
+            transform: scale(0.95);
+            box-shadow: 0 2px 10px rgba(52, 152, 219, 0.6);
+        }
+        
+        .up-btn, .down-btn {
+            width: 130px;
         }
         
         .action-btn {
             position: absolute;
-            bottom: 30px; /* 保持右下角 */
-            right: 30px; /* 保持右下角 */
-            width: 65px;
-            height: 65px;
+            bottom: 120px;
+            right: 30px;
+            width: 90px;
+            height: 90px;
             border-radius: 50%;
             background: linear-gradient(135deg, #e74c3c, #c0392b);
             color: white;
             border: none;
-            font-size: 16px;
+            font-size: 18px;
             font-weight: bold;
             touch-action: manipulation;
-            box-shadow: 0 3px 12px rgba(231, 76, 60, 0.4);
+            box-shadow: 0 4px 15px rgba(231, 76, 60, 0.4);
             z-index: 1000;
-            backdrop-filter: blur(8px);
+            backdrop-filter: blur(5px);
         }
         
         .action-btn:active {
-            transform: scale(0.92);
-            box-shadow: 0 1px 8px rgba(231, 76, 60, 0.6);
+            transform: scale(0.95);
+            box-shadow: 0 2px 10px rgba(231, 76, 60, 0.6);
         }
         
-        /* 移动端优化 */
+        .fullscreen-btn {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120px;
+            height: 45px;
+            background: rgba(46, 204, 113, 0.8);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: bold;
+            touch-action: manipulation;
+            box-shadow: 0 4px 15px rgba(46, 204, 113, 0.4);
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+        }
+        
+        .fullscreen-btn:active {
+            transform: translateX(-50%) scale(0.95);
+        }
+        
+        /* 桌面端隐藏虚拟按键 */
+        @media (min-width: 769px) {
+            .control-area, .action-btn, .fullscreen-btn {
+                display: none;
+            }
+        }
+        
+        /* 小屏幕优化 */
         @media (max-width: 480px) {
             .control-btn {
-                width: 48px;
-                height: 48px;
-                font-size: 18px;
+                width: 50px;
+                height: 50px;
+                font-size: 20px;
+            }
+            
+            .up-btn, .down-btn {
+                width: 110px;
             }
             
             .horizontal-controls {
-                gap: 6px;
+                gap: 8px;
             }
             
             .action-btn {
-                width: 55px;
-                height: 55px;
-                bottom: 25px;
-                right: 25px;
-                font-size: 14px;
+                width: 75px;
+                height: 75px;
+                bottom: 100px;
+                right: 20px;
+                font-size: 16px;
+            }
+            
+            .fullscreen-btn {
+                width: 100px;
+                height: 40px;
+                font-size: 13px;
+                bottom: 20px;
             }
             
             .control-area {
-                bottom: 25px;
-                left: 25px;
+                bottom: 100px;
             }
         }
     `;
@@ -537,6 +648,11 @@ function drawGameInfo() {
     ctx.fillText(`关卡: ${level}`, 10, 45);
     ctx.fillText(`生命值: ${playerTank.health}`, 10, 65);
     ctx.fillText(`剩余敌人: ${enemies.length}`, 10, 85);
+    
+    // 移动端显示额外信息
+    if (isMobileDevice()) {
+        ctx.fillText(`全屏: ${isFullscreen ? '是' : '否'}`, canvas.width - 100, 25);
+    }
 }
 
 // 游戏结束
@@ -568,9 +684,45 @@ document.addEventListener('keyup', (e) => {
     keys[e.key] = false;
 });
 
+// 重新开始游戏
+function setupRestartButton() {
+    // 确保重新开始按钮存在后再绑定事件
+    if (!restartBtn) {
+        restartBtn = document.getElementById('restartBtn');
+    }
+    
+    if (restartBtn) {
+        restartBtn.onclick = function() {
+            console.log('重新开始按钮被点击');
+            resetGame();
+        };
+    } else {
+        console.error('重新开始按钮未找到');
+    }
+}
+
+// 重置游戏
+function resetGame() {
+    console.log('重置游戏开始');
+    score = 0;
+    level = 1;
+    bullets = [];
+    enemies = []; // 清空敌人数组
+    resetTouchControls();
+    
+    // 重新初始化游戏
+    if (canvas && ctx) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+    setTimeout(() => {
+        initGame();
+    }, 100);
+}
+
 // 开始坦克游戏
 function startTankGame() {
     modal.style.display = 'block';
+    setupRestartButton();
     setTimeout(() => {
         initGame();
     }, 100);
@@ -580,28 +732,12 @@ function startTankGame() {
 closeBtn.onclick = function() {
     modal.style.display = 'none';
     gameRunning = false;
-    resetTouchControls();
-}
-
-// 重新开始游戏
-restartBtn.onclick = function() {
-    console.log('重新开始按钮被点击');
-    resetGame();
-}
-
-// 重置游戏
-function resetGame() {
-    console.log('重置游戏开始');
-    score = 0;
-    level = 1;
-    bullets = [];
-    enemies = [];
-    resetTouchControls();
+    resetTouchControls(); // 清理触屏控制
     
-    // 重新初始化游戏
-    setTimeout(() => {
-        initGame();
-    }, 100);
+    // 退出全屏
+    if (isFullscreen) {
+        exitFullscreen();
+    }
 }
 
 // 点击模态框外部关闭
@@ -610,9 +746,27 @@ window.onclick = function(event) {
         modal.style.display = 'none';
         gameRunning = false;
         resetTouchControls();
+        
+        // 退出全屏
+        if (isFullscreen) {
+            exitFullscreen();
+        }
     }
 }
 
+// 监听全屏状态变化
+document.addEventListener('fullscreenchange', handleFullscreenChange);
+document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+document.addEventListener('mozfullscreenchange', handleFullscreenChange);
+document.addEventListener('MSFullscreenChange', handleFullscreenChange);
+
+function handleFullscreenChange() {
+    isFullscreen = !!document.fullscreenElement || 
+                   !!document.webkitFullscreenElement || 
+                   !!document.mozFullScreenElement || 
+                   !!document.msFullscreenElement;
+    updateFullscreenButton();
+}
 
 // 页面加载完成后的初始化
 document.addEventListener('DOMContentLoaded', function() {
