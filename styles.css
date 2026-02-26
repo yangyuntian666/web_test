@@ -406,7 +406,7 @@ footer {
     }
     
     #gameCanvas {
-        height: 70vh;
+        height: 65vh; /* 为控制按钮留出空间 */
     }
     
     /* 移动端安全区域适配 */
@@ -440,6 +440,10 @@ footer {
     .modal-content {
         padding: 5px;
     }
+    
+    #gameCanvas {
+        height: 60vh; /* 小屏幕进一步压缩游戏区域 */
+    }
 }
 
-/* 触屏控制相关的额外样式已在JavaScript中动态添加 */
+/* 虚拟按键相关的样式已在JavaScript中动态添加 */

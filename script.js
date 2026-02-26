@@ -12,8 +12,6 @@ let score = 0;
 let level = 1;
 
 // 触屏控制变量
-let touchStartX = 0;
-let touchStartY = 0;
 let touchControls = {
     up: false,
     down: false,
@@ -281,13 +279,8 @@ function updateFullscreenButton() {
 function setupTouchControls() {
     const canvasContainer = document.getElementById('tankGameContainer');
     
-    // 创建虚拟摇杆和射击按钮
-    createTouchControls();
-    
-    // 添加触屏事件监听
-    canvasContainer.addEventListener('touchstart', handleTouchStart, false);
-    canvasContainer.addEventListener('touchmove', handleTouchMove, false);
-    canvasContainer.addEventListener('touchend', handleTouchEnd, false);
+    // 创建虚拟按键控制
+    createVirtualButtons();
     
     // 防止默认的触摸行为
     canvasContainer.addEventListener('touchstart', preventDefaultTouch, { passive: false });
@@ -302,43 +295,45 @@ function preventDefaultTouch(e) {
     }
 }
 
-// 创建触屏控制UI
-function createTouchControls() {
+// 创建虚拟按键UI
+function createVirtualButtons() {
     const container = document.getElementById('tankGameContainer');
     
-    // 创建虚拟摇杆区域
-    const joystickArea = document.createElement('div');
-    joystickArea.id = 'joystickArea';
-    joystickArea.innerHTML = `
-        <div id="joystickBase"></div>
-        <div id="joystickHandle"></div>
+    // 创建方向控制区域
+    const directionArea = document.createElement('div');
+    directionArea.id = 'directionArea';
+    directionArea.className = 'control-area';
+    directionArea.innerHTML = `
+        <button class="control-btn up-btn" id="upBtn">↑</button>
+        <div class="horizontal-controls">
+            <button class="control-btn left-btn" id="leftBtn">←</button>
+            <button class="control-btn right-btn" id="rightBtn">→</button>
+        </div>
+        <button class="control-btn down-btn" id="downBtn">↓</button>
     `;
     
     // 创建射击按钮
     const shootButton = document.createElement('button');
     shootButton.id = 'shootButton';
+    shootButton.className = 'action-btn';
     shootButton.textContent = '射击';
-    shootButton.addEventListener('touchstart', (e) => {
-        e.preventDefault();
-        touchControls.shoot = true;
-    });
-    shootButton.addEventListener('touchend', (e) => {
-        e.preventDefault();
-        touchControls.shoot = false;
-    });
     
     // 创建全屏按钮（仅移动端显示）
     const fullscreenButton = document.createElement('button');
     fullscreenButton.id = 'fullscreenBtn';
+    fullscreenButton.className = 'fullscreen-btn';
     fullscreenButton.textContent = isFullscreen ? '退出全屏' : '全屏游戏';
     fullscreenButton.addEventListener('click', toggleFullscreen);
     
-    container.appendChild(joystickArea);
+    container.appendChild(directionArea);
     container.appendChild(shootButton);
     container.appendChild(fullscreenButton);
     
-    // 添加触屏控制样式
-    addTouchControlStyles();
+    // 添加事件监听
+    setupButtonEvents();
+    
+    // 添加样式
+    addVirtualButtonStyles();
 }
 
 // 切换全屏模式
@@ -350,58 +345,60 @@ function toggleFullscreen() {
     }
 }
 
-// 添加触屏控制样式
-function addTouchControlStyles() {
+// 添加虚拟按键样式
+function addVirtualButtonStyles() {
     // 移除已存在的样式
-    const existingStyle = document.getElementById('touchControlStyles');
+    const existingStyle = document.getElementById('virtualButtonStyles');
     if (existingStyle) {
         existingStyle.remove();
     }
     
     const style = document.createElement('style');
-    style.id = 'touchControlStyles';
+    style.id = 'virtualButtonStyles';
     style.textContent = `
-        #joystickArea {
+        .control-area {
             position: absolute;
             bottom: 120px;
-            left: 30px;
-            width: 140px;
-            height: 140px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.2);
-            touch-action: none;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
             z-index: 1000;
-            backdrop-filter: blur(5px);
-            border: 2px solid rgba(255, 255, 255, 0.3);
         }
         
-        #joystickBase {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 90px;
-            height: 90px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.3);
-            border: 2px solid rgba(255, 255, 255, 0.5);
+        .horizontal-controls {
+            display: flex;
+            gap: 10px;
         }
         
-        #joystickHandle {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #3498db, #2980b9);
-            transition: transform 0.05s ease-out;
+        .control-btn {
+            width: 60px;
+            height: 60px;
+            border-radius: 15px;
+            border: none;
+            background: rgba(52, 152, 219, 0.8);
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+            touch-action: manipulation;
             box-shadow: 0 4px 15px rgba(52, 152, 219, 0.4);
-            border: 2px solid rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(5px);
+            transition: all 0.1s ease;
         }
         
-        #shootButton {
+        .control-btn:active {
+            background: rgba(41, 128, 185, 0.9);
+            transform: scale(0.95);
+            box-shadow: 0 2px 10px rgba(52, 152, 219, 0.6);
+        }
+        
+        .up-btn, .down-btn {
+            width: 130px;
+        }
+        
+        .action-btn {
             position: absolute;
             bottom: 120px;
             right: 30px;
@@ -419,12 +416,12 @@ function addTouchControlStyles() {
             backdrop-filter: blur(5px);
         }
         
-        #shootButton:active {
+        .action-btn:active {
             transform: scale(0.95);
             box-shadow: 0 2px 10px rgba(231, 76, 60, 0.6);
         }
         
-        #fullscreenBtn {
+        .fullscreen-btn {
             position: absolute;
             bottom: 30px;
             left: 50%;
@@ -440,39 +437,37 @@ function addTouchControlStyles() {
             touch-action: manipulation;
             box-shadow: 0 4px 15px rgba(46, 204, 113, 0.4);
             z-index: 1000;
+            backdrop-filter: blur(5px);
         }
         
-        #fullscreenBtn:active {
+        .fullscreen-btn:active {
             transform: translateX(-50%) scale(0.95);
         }
         
-        /* 桌面端隐藏触屏控制 */
+        /* 桌面端隐藏虚拟按键 */
         @media (min-width: 769px) {
-            #joystickArea, #shootButton, #fullscreenBtn {
+            .control-area, .action-btn, .fullscreen-btn {
                 display: none;
             }
         }
         
-        /* 优化小屏幕显示 */
+        /* 小屏幕优化 */
         @media (max-width: 480px) {
-            #joystickArea {
-                width: 120px;
-                height: 120px;
-                bottom: 100px;
-                left: 20px;
+            .control-btn {
+                width: 50px;
+                height: 50px;
+                font-size: 20px;
             }
             
-            #joystickBase {
-                width: 75px;
-                height: 75px;
+            .up-btn, .down-btn {
+                width: 110px;
             }
             
-            #joystickHandle {
-                width: 40px;
-                height: 40px;
+            .horizontal-controls {
+                gap: 8px;
             }
             
-            #shootButton {
+            .action-btn {
                 width: 75px;
                 height: 75px;
                 bottom: 100px;
@@ -480,111 +475,69 @@ function addTouchControlStyles() {
                 font-size: 16px;
             }
             
-            #fullscreenBtn {
+            .fullscreen-btn {
                 width: 100px;
                 height: 40px;
                 font-size: 13px;
                 bottom: 20px;
+            }
+            
+            .control-area {
+                bottom: 100px;
             }
         }
     `;
     document.head.appendChild(style);
 }
 
-// 触屏事件处理函数（优化版）
-function handleTouchStart(e) {
-    e.preventDefault();
-    const touch = e.touches[0];
-    const rect = e.currentTarget.getBoundingClientRect();
-    touchStartX = touch.clientX - rect.left;
-    touchStartY = touch.clientY - rect.top;
+// 设置按钮事件监听
+function setupButtonEvents() {
+    // 方向按钮事件
+    document.getElementById('upBtn').addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        touchControls.up = true;
+    });
+    document.getElementById('upBtn').addEventListener('touchend', (e) => {
+        e.preventDefault();
+        touchControls.up = false;
+    });
     
-    updateTouchControlsOptimized(touchStartX, touchStartY);
-}
-
-function handleTouchMove(e) {
-    e.preventDefault();
-    const touch = e.touches[0];
-    const rect = e.currentTarget.getBoundingClientRect();
-    const currentX = touch.clientX - rect.left;
-    const currentY = touch.clientY - rect.top;
+    document.getElementById('downBtn').addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        touchControls.down = true;
+    });
+    document.getElementById('downBtn').addEventListener('touchend', (e) => {
+        e.preventDefault();
+        touchControls.down = false;
+    });
     
-    updateTouchControlsOptimized(currentX, currentY);
-}
-
-function handleTouchEnd(e) {
-    e.preventDefault();
-    resetTouchControls();
-}
-
-// 优化的触屏控制更新（提高灵敏度）
-function updateTouchControlsOptimized(x, y) {
-    const centerX = 70; // joystickArea中心点 (140px / 2)
-    const centerY = 70;
-    const threshold = 15; // 降低最小触发阈值
+    document.getElementById('leftBtn').addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        touchControls.left = true;
+    });
+    document.getElementById('leftBtn').addEventListener('touchend', (e) => {
+        e.preventDefault();
+        touchControls.left = false;
+    });
     
-    const deltaX = x - centerX;
-    const deltaY = y - centerY;
-    const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+    document.getElementById('rightBtn').addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        touchControls.right = true;
+    });
+    document.getElementById('rightBtn').addEventListener('touchend', (e) => {
+        e.preventDefault();
+        touchControls.right = false;
+    });
     
-    // 重置所有方向
-    touchControls.up = false;
-    touchControls.down = false;
-    touchControls.left = false;
-    touchControls.right = false;
-    
-    // 如果移动距离超过阈值，则激活相应方向
-    if (distance > threshold) {
-        // 使用更精确的角度计算
-        const angle = Math.atan2(deltaY, deltaX);
-        const angleDeg = angle * 180 / Math.PI;
-        
-        // 8方向控制优化
-        if (angleDeg >= -22.5 && angleDeg < 22.5) {
-            touchControls.right = true; // 右
-        } else if (angleDeg >= 22.5 && angleDeg < 67.5) {
-            touchControls.right = true;
-            touchControls.down = true; // 右下
-        } else if (angleDeg >= 67.5 && angleDeg < 112.5) {
-            touchControls.down = true; // 下
-        } else if (angleDeg >= 112.5 && angleDeg < 157.5) {
-            touchControls.down = true;
-            touchControls.left = true; // 左下
-        } else if (angleDeg >= 157.5 || angleDeg < -157.5) {
-            touchControls.left = true; // 左
-        } else if (angleDeg >= -157.5 && angleDeg < -112.5) {
-            touchControls.left = true;
-            touchControls.up = true; // 左上
-        } else if (angleDeg >= -112.5 && angleDeg < -67.5) {
-            touchControls.up = true; // 上
-        } else {
-            touchControls.up = true;
-            touchControls.right = true; // 右上
-        }
-        
-        // 更新摇杆手柄位置（更平滑的动画）
-        const handle = document.getElementById('joystickHandle');
-        const maxDistance = 35; // 增加最大偏移距离
-        const moveRatio = Math.min(distance / (centerX - threshold), 1);
-        const moveX = Math.cos(angle) * maxDistance * moveRatio;
-        const moveY = Math.sin(angle) * maxDistance * moveRatio;
-        handle.style.transform = `translate(calc(-50% + ${moveX}px), calc(-50% + ${moveY}px))`;
-    }
-}
-
-// 重置触屏控制
-function resetTouchControls() {
-    touchControls.up = false;
-    touchControls.down = false;
-    touchControls.left = false;
-    touchControls.right = false;
-    touchControls.shoot = false;
-    
-    // 重置摇杆手柄位置
-    const handle = document.getElementById('joystickHandle');
-    if (handle) {
-        handle.style.transform = 'translate(-50%, -50%)';
-    }
+    // 射击按钮事件
+    document.getElementById('shootButton').addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        touchControls.shoot = true;
+    });
+    document.getElementById('shootButton').addEventListener('touchend', (e) => {
+        e.preventDefault();
+        touchControls.shoot = false;
+    });
 }
 
 // 生成敌人
