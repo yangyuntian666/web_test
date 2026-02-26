@@ -66,7 +66,9 @@ npx http-server -p 8000
 
 为了方便测试触屏功能，提供了专门的测试页面：
 
-**触屏控制测试页面**：http://localhost:8000/test_touch_controls.html
+**控制测试页面**：http://localhost:8000/simple_tank_game.html
+**触屏功能测试**：http://localhost:8000/control_test.html
+**完整游戏测试**：http://localhost:8000/test_touch_controls.html
 
 该页面可以帮助你：
 - ✅ 验证虚拟按键功能
