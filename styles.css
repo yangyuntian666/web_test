@@ -357,22 +357,6 @@ footer {
     transform: scale(1.05);
 }
 
-/* 全屏相关样式 */
-:root {
-    --safe-area-inset-top: env(safe-area-inset-top);
-    --safe-area-inset-bottom: env(safe-area-inset-bottom);
-    --safe-area-inset-left: env(safe-area-inset-left);
-    --safe-area-inset-right: env(safe-area-inset-right);
-}
-
-/* 全屏模式下的特殊处理 */
-:-webkit-full-screen {
-    background: #000;
-}
-
-:full-screen {
-    background: #000;
-}
 
 /* 响应式设计 */
 @media (max-width: 768px) {
@@ -412,7 +396,7 @@ footer {
     }
     
     #gameCanvas {
-        height: 65vh; /* 为控制按钮留出空间 */
+        height: 60vh; /* 保持原始比例，不拉长 */
     }
     
     /* 移动端安全区域适配 */
@@ -448,7 +432,7 @@ footer {
     }
     
     #gameCanvas {
-        height: 60vh; /* 小屏幕进一步压缩游戏区域 */
+        height: 55vh; /* 小屏幕保持合理比例 */
     }
 }
 
