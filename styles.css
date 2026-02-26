@@ -406,7 +406,7 @@ footer {
     }
     
     #gameCanvas {
-        height: 65vh; /* 为控制按钮留出空间 */
+        height: 50vh; /* 调整为正常界面尺寸，为控制按钮留出合适空间 */
     }
     
     /* 移动端安全区域适配 */
@@ -442,7 +442,7 @@ footer {
     }
     
     #gameCanvas {
-        height: 60vh; /* 小屏幕进一步压缩游戏区域 */
+        height: 45vh; /* 小屏幕进一步调整游戏区域 */
     }
 }
 

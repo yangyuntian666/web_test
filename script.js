@@ -358,86 +358,84 @@ function addVirtualButtonStyles() {
     style.textContent = `
         .control-area {
             position: absolute;
-            bottom: 120px;
+            bottom: 100px; /* 调整位置，为游戏画面留出更多空间 */
             left: 50%;
             transform: translateX(-50%);
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 10px;
+            gap: 8px; /* 减小间距 */
             z-index: 1000;
         }
         
         .horizontal-controls {
             display: flex;
-            gap: 10px;
+            gap: 8px; /* 减小水平按钮间距 */
         }
         
         .control-btn {
-            width: 60px;
-            height: 60px;
-            border-radius: 15px;
+            width: 55px; /* 统一大小 */
+            height: 55px; /* 统一大小 */
+            border-radius: 12px; /* 稍微减小圆角 */
             border: none;
-            background: rgba(52, 152, 219, 0.8);
+            background: rgba(52, 152, 219, 0.85); /* 增强背景透明度 */
             color: white;
-            font-size: 24px;
+            font-size: 22px; /* 调整字体大小 */
             font-weight: bold;
             touch-action: manipulation;
-            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.4);
-            backdrop-filter: blur(5px);
+            box-shadow: 0 3px 12px rgba(52, 152, 219, 0.4);
+            backdrop-filter: blur(8px); /* 减弱模糊效果 */
             transition: all 0.1s ease;
         }
         
         .control-btn:active {
-            background: rgba(41, 128, 185, 0.9);
-            transform: scale(0.95);
-            box-shadow: 0 2px 10px rgba(52, 152, 219, 0.6);
+            background: rgba(41, 128, 185, 0.95);
+            transform: scale(0.92); /* 减小按压缩放 */
+            box-shadow: 0 1px 8px rgba(52, 152, 219, 0.6);
         }
         
-        .up-btn, .down-btn {
-            width: 130px;
-        }
+        /* 移除之前的不同宽度设置，统一所有按钮大小 */
         
         .action-btn {
             position: absolute;
-            bottom: 120px;
-            right: 30px;
-            width: 90px;
-            height: 90px;
+            bottom: 100px; /* 与方向键保持同一水平线 */
+            right: 25px; /* 调整右边距 */
+            width: 65px; /* 稍微减小射击按钮 */
+            height: 65px; /* 稍微减小射击按钮 */
             border-radius: 50%;
             background: linear-gradient(135deg, #e74c3c, #c0392b);
             color: white;
             border: none;
-            font-size: 18px;
+            font-size: 16px;
             font-weight: bold;
             touch-action: manipulation;
-            box-shadow: 0 4px 15px rgba(231, 76, 60, 0.4);
+            box-shadow: 0 3px 12px rgba(231, 76, 60, 0.4);
             z-index: 1000;
-            backdrop-filter: blur(5px);
+            backdrop-filter: blur(8px);
         }
         
         .action-btn:active {
-            transform: scale(0.95);
-            box-shadow: 0 2px 10px rgba(231, 76, 60, 0.6);
+            transform: scale(0.92);
+            box-shadow: 0 1px 8px rgba(231, 76, 60, 0.6);
         }
         
         .fullscreen-btn {
             position: absolute;
-            bottom: 30px;
+            bottom: 25px; /* 调整到底部合适位置 */
             left: 50%;
             transform: translateX(-50%);
-            width: 120px;
-            height: 45px;
-            background: rgba(46, 204, 113, 0.8);
+            width: 110px; /* 稍微减小宽度 */
+            height: 40px; /* 稍微减小高度 */
+            background: rgba(46, 204, 113, 0.85);
             color: white;
             border: none;
-            border-radius: 25px;
-            font-size: 14px;
+            border-radius: 20px;
+            font-size: 13px;
             font-weight: bold;
             touch-action: manipulation;
-            box-shadow: 0 4px 15px rgba(46, 204, 113, 0.4);
+            box-shadow: 0 3px 12px rgba(46, 204, 113, 0.4);
             z-index: 1000;
-            backdrop-filter: blur(5px);
+            backdrop-filter: blur(8px);
         }
         
         .fullscreen-btn:active {
@@ -454,36 +452,32 @@ function addVirtualButtonStyles() {
         /* 小屏幕优化 */
         @media (max-width: 480px) {
             .control-btn {
-                width: 50px;
-                height: 50px;
-                font-size: 20px;
-            }
-            
-            .up-btn, .down-btn {
-                width: 110px;
+                width: 48px; /* 小屏幕进一步缩小 */
+                height: 48px;
+                font-size: 18px;
             }
             
             .horizontal-controls {
-                gap: 8px;
+                gap: 6px;
             }
             
             .action-btn {
-                width: 75px;
-                height: 75px;
-                bottom: 100px;
+                width: 55px;
+                height: 55px;
+                bottom: 90px;
                 right: 20px;
-                font-size: 16px;
+                font-size: 14px;
             }
             
             .fullscreen-btn {
                 width: 100px;
-                height: 40px;
-                font-size: 13px;
+                height: 35px;
+                font-size: 12px;
                 bottom: 20px;
             }
             
             .control-area {
-                bottom: 100px;
+                bottom: 90px;
             }
         }
     `;
