@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>杨云天的AI小站</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>杨云天的AI小站</h1>
+            <nav>
+                <ul>
+                    <li><a href="#home">首页</a></li>
+                    <li><a href="#games">游戏中心</a></li>
+                    <li><a href="#about">关于</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section id="home" class="hero">
+            <div class="container">
+                <h2>欢迎来到我的AI技术世界</h2>
+                <p>这里有精彩的游戏和前沿的AI技术分享</p>
+                <div class="tech-stats">
+                    <div class="stat-card">
+                        <h3>AI</h3>
+                        <p>人工智能</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>技术</h3>
+                        <p>创新驱动</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>未来</h3>
+                        <p>持续探索</p>
+                    </div>
+                </div>
+                <a href="#games" class="btn-primary">进入游戏中心</a>
+            </div>
+        </section>
+
+        <section id="games" class="games-section">
+            <div class="container">
+                <h2>游戏中心</h2>
+                <div class="games-grid">
+                    <div class="game-card">
+                        <div class="game-icon">🎮</div>
+                        <h3>坦克大战</h3>
+                        <p>经典单人坦克对战游戏</p>
+                        <button onclick="startTankGame()" class="btn-game">开始游戏</button>
+                    </div>
+                    <div class="game-card">
+                        <div class="game-icon">🧩</div>
+                        <h3>更多游戏</h3>
+                        <p>敬请期待更多精彩游戏</p>
+                        <button class="btn-game disabled">即将上线</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="about" class="about-section">
+            <div class="container">
+                <h2>关于本站</h2>
+                <div class="about-content">
+                    <div class="about-text">
+                        <p>这里是杨云天的技术博客和游戏天地，专注于AI技术和个人随想。</p>
+                        <p>我们相信技术的力量，AI改变世界。</p>
+                    </div>
+                    <div class="skills">
+                        <h3>技术栈</h3>
+                        <div class="skill-tags">
+                            <span class="skill-tag">JavaScript</span>
+                            <span class="skill-tag">Python</span>
+                            <span class="skill-tag">AI/ML</span>
+                            <span class="skill-tag">Web开发</span>
+                            <span class="skill-tag">游戏开发</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2026 杨云天的AI小站. 保留所有权利.</p>
+        </div>
+    </footer>
+
+    <!-- 游戏模态框 -->
+    <div id="gameModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <div id="tankGameContainer">
+                <canvas id="gameCanvas" width="800" height="600"></canvas>
+                <div class="game-controls">
+                    <p>使用 WASD 移动，空格键射击</p>
+                    <button id="restartBtn">重新开始</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
